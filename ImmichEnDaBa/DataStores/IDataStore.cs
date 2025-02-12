@@ -4,8 +4,10 @@ namespace ImmichEnDaBa.DataStores;
 
 public interface IDataStore
 {
-    Task CreateFolder(string folderName, string folderPath);
-    
+    Task<bool> CreateFolder(string remoteFolderPath);
+
+    Task<bool> DoesFolderExist(string remoteFolderPath);
+
     Task<string[]> GetFolderContents(string remoteFolderPath);
 
     Task<bool> DoesFileExist(string remoteFilePath);

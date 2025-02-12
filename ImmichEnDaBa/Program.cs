@@ -1,4 +1,5 @@
 ﻿
+using ImmichEnDaBa;
 using ImmichEnDaBa.DataStores.FTP;
 using ImmichEnDaBa.Settings;
 
@@ -14,7 +15,23 @@ if (settingsService.IsSettingsFilePresent() is false)
 
 AppSettings settings = settingsService.GetSettings()!;
 
+string fileLocal = "/home/sander/Documents/test-file.txt";
+string fileDesLocal = "/home/sander/Documents/thing.zip";
+// string fileDesLocal2 = "/home/sander/";
 
-FTPDataStore dataStore = new FTPDataStore();
+ZippingService zippingService = new();
+
+zippingService.ZipFile(fileLocal, fileDesLocal, settings.EncryptionKey);
+
+// zippingService.UnzipFile(fileDesLocal, fileDesLocal2, settings.EncryptionKey);
+
+FTPDataStore dataStore = await FTPDataStore.GenerateNewFromCredentials(
+    settings.FtpHost,
+    settings.FtpPort,
+    settings.FtpUsername,
+    settings.FtpPassword
+);
+
+await dataStore.UploadFile("/text-files/zipped-text/test-file.zip", fileDesLocal);
 
 Console.WriteLine("Hello, World!");

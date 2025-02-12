@@ -7,8 +7,13 @@ public class SettingsService
 {
     public static readonly string SettingFilePath = Path.GetFullPath("./AppSettings.json");
 
-    private JsonSerializerOptions niceLookingJsonOptions = new() { 
+    private readonly JsonSerializerOptions niceLookingJsonOptions = new() { 
         WriteIndented = true 
+    };
+
+    private readonly JsonSerializerOptions compatibilityRead = new() {
+        AllowTrailingCommas = true,
+        PropertyNameCaseInsensitive = true,
     };
 
     public bool IsSettingsFilePresent() {
@@ -40,7 +45,7 @@ public class SettingsService
     public AppSettings? GetSettings() 
     {
         string json = File.ReadAllText(SettingFilePath);
-        return JsonSerializer.Deserialize<AppSettings>(json);
+        return JsonSerializer.Deserialize<AppSettings>(json, compatibilityRead);
     }
 
 
