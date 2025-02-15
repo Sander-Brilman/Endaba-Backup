@@ -1,0 +1,52 @@
+using System;
+
+namespace ImmichEnDaBa.Settings;
+
+public sealed record AppSettings(
+    string[] BackupLocationPatterns,
+    string? EncryptionKey
+) {
+    private string? _basePath; 
+
+    private static string DetermineBasePath(string[] locations) 
+    {
+        // if there is only 1 backup pattern the entire path is the base (minus the * at the end)
+        if (locations.Length == 1) {
+            return locations[0][..^1];
+        }
+
+        string[][] filesParts = locations
+            .Select(x => x[..^1]                
+                .Split('/')
+                .Where(p => p != "")
+                .ToArray()
+            )
+            .ToArray();
+        
+        int smallestPathSize = filesParts.Select(f => f.Length).Min();
+
+        int lastCommonIndex = 0;
+        for (int i = 0; i < smallestPathSize; i++)
+        {
+            string[] verticalSlice = filesParts
+                .Select(x => x[i])
+                .ToArray();
+
+            if (verticalSlice.Distinct().Count() == 1) {
+                continue;
+            } 
+
+            lastCommonIndex = i;
+            break;
+        }  
+
+        return "/" + string.Join('/', filesParts.First().Take(lastCommonIndex)) + "/";
+    }
+
+    public string BasePath { 
+        get {
+            _basePath ??= DetermineBasePath(BackupLocationPatterns);
+            return _basePath;
+        } 
+    }
+}

@@ -5,15 +5,17 @@ using ICSharpCode.SharpZipLib.Zip;
 
 namespace ImmichEnDaBa;
 
-public class ZippingService
+public sealed class ZippingService
 {
-    public void ZipFile(string localFilePath, string destinationLocalFilePath, string? password = null) 
+    public int CompressionLevel { get; set; } = 9;
+
+    public void ZipFile(string localFilePath, string destinationLocalFilePath, string? encryptionKey = null) 
     {
         using FileStream fsOut = File.Create(destinationLocalFilePath);
         using ZipOutputStream zipStream = new(fsOut);
 
-        zipStream.SetLevel(9); // Compression level (0-9)
-        zipStream.Password = password; // Set the password
+        zipStream.SetLevel(CompressionLevel);
+        zipStream.Password = encryptionKey; 
 
         FileInfo fileInfo = new(localFilePath);
         string entryName = Path.GetFileName(localFilePath);
@@ -35,12 +37,12 @@ public class ZippingService
 
     private FastZip? fastZip;
 
-    public void UnzipFile(string localFilePath, string destinationLocalFilePath, string? password = null) 
+    public void UnzipFile(string localFilePath, string destinationLocalFilePath, string? encryptionKey = null) 
     {
         fastZip ??= new()
         {
             CompressionLevel = ICSharpCode.SharpZipLib.Zip.Compression.Deflater.CompressionLevel.BEST_COMPRESSION,
-            Password = password,
+            Password = encryptionKey,
             EntryEncryptionMethod = ZipEncryptionMethod.AES256,
             RestoreDateTimeOnExtract = true,
             RestoreAttributesOnExtract = true

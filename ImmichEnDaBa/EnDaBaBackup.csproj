@@ -8,9 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentFTP" Version="52.0.0" />
-    <PackageReference Include="IronZIP" Version="2025.2.3" />
-    <PackageReference Include="SharpZipLib" Version="1.4.2" />
+    <ProjectReference Include="../EnDaBaServices/EnDaBaServices.csproj" />
   </ItemGroup>
 
 </Project>
