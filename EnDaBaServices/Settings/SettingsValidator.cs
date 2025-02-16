@@ -1,6 +1,6 @@
 using System;
 
-namespace ImmichEnDaBa.Settings;
+namespace EnDaBaServices.Settings;
 
 public sealed class SettingsValidator
 {

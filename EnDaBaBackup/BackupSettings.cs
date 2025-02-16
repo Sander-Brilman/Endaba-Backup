@@ -1,8 +1,8 @@
 using System;
 
-namespace ImmichEnDaBa.Settings;
+namespace EnDaBaServices.Settings;
 
-public sealed record AppSettings(
+public sealed record BackupSettings(
     string[] BackupLocationPatterns,
     string? EncryptionKey
 ) {

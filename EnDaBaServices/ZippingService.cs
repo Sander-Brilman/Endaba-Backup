@@ -3,13 +3,13 @@ using System.IO;
 using System.IO.Compression;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace ImmichEnDaBa;
+namespace EnDaBaServices;
 
 public sealed class ZippingService
 {
     public int CompressionLevel { get; set; } = 9;
 
-    public void ZipFile(string localFilePath, string destinationLocalFilePath, string? encryptionKey = null) 
+    public void ZipFile(string localFilePath, string destinationLocalFilePath, string? encryptionKey) 
     {
         using FileStream fsOut = File.Create(destinationLocalFilePath);
         using ZipOutputStream zipStream = new(fsOut);

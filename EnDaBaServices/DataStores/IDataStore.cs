@@ -1,6 +1,6 @@
 using System;
 
-namespace ImmichEnDaBa.DataStores;
+namespace EnDaBaServices.DataStores;
 
 public interface IDataStore
 {
@@ -8,9 +8,11 @@ public interface IDataStore
 
     Task<bool> DoesFileExist(string remoteFilePath, CancellationToken cancellationToken);
 
-    Task UploadFile(string remoteFilePath, string localFilePath, CancellationToken cancellationToken);
+    Task UploadFile(string localFilePath, string remoteFilePath, CancellationToken cancellationToken);
 
     Task DownloadFile(string remoteFilePath, string localFilePath, CancellationToken cancellationToken);
 
     Task DeleteFile(string remoteFilePath, CancellationToken cancellationToken);
+
+    Task<string?> GetFileContentsAsString(string remoteFilePath, CancellationToken cancellationToken);
 }

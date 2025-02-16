@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 
-namespace ImmichEnDaBa.Settings;
+namespace EnDaBaServices.Settings;
 
 public sealed class SettingsService<TSettings>(string settingsFileName)
     where TSettings : class

@@ -1,6 +1,6 @@
 using System;
 
-namespace ImmichEnDaBa;
+namespace EnDaBaServices;
 
 public sealed class PathResolver
 {

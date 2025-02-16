@@ -1,8 +1,9 @@
 using System;
 using EnDaBaServices.DataStores.FTP;
 using FluentFTP;
+using FluentFTP.Exceptions;
 
-namespace ImmichEnDaBa.DataStores.FTP;
+namespace EnDaBaServices.DataStores.FTP;
 
 public sealed class FTPDataStore(AsyncFtpClient client) : IDataStore
 {
@@ -35,7 +36,7 @@ public sealed class FTPDataStore(AsyncFtpClient client) : IDataStore
         return await client.GetNameListing(remoteFolderPath, token: cancellationToken);
     }
 
-    public async Task UploadFile(string remoteFilePath, string localFilePath, CancellationToken cancellationToken)
+    public async Task UploadFile(string localFilePath, string remoteFilePath, CancellationToken cancellationToken)
     {
         string folder = Path.GetDirectoryName(remoteFilePath)! + "/";
 
@@ -46,8 +47,8 @@ public sealed class FTPDataStore(AsyncFtpClient client) : IDataStore
 
         var status = await client.UploadFile(localFilePath, remoteFilePath, FtpRemoteExists.Overwrite, token: cancellationToken);
 
-        if (status == FtpStatus.Failed) {
-            throw new Exception("upload failed for " + remoteFilePath);
+        if (status != FtpStatus.Success) {
+            throw new Exception($"upload {status} for {remoteFilePath}");
         }
     
         return;
@@ -71,5 +72,15 @@ public sealed class FTPDataStore(AsyncFtpClient client) : IDataStore
         return new(client);
     }
 
-
+    public async Task<string?> GetFileContentsAsString(string remoteFilePath, CancellationToken cancellationToken)
+    {
+        try {
+            byte[] bytes = await client.DownloadBytes(remoteFilePath, cancellationToken);
+            return System.Text.Encoding.Default.GetString(bytes); 
+        }
+        catch (FtpMissingObjectException) 
+        {
+            return null;
+        }
+    }
 }
