@@ -123,19 +123,26 @@ while (true) {
 
 
     Console.Clear();
-    Console.WriteLine("");
-    Console.WriteLine($"time: {stopwatch.Elapsed.TotalSeconds} seconden");
-    Console.WriteLine($"hashing: {hashingManager.GetWorkersCount()} workers and {hashingManager.Dispatcher.JobsLeft()} jobs");
-    Console.WriteLine($"checking files: {fileCheckManager.GetWorkersCount()} workers and {fileCheckManager.Dispatcher.JobsLeft()} jobs");
-    Console.WriteLine($"zipping: {zippingManager.GetWorkersCount()} workers and {zippingManager.Dispatcher.JobsLeft()} jobs");
-    Console.WriteLine($"upload: {uploadManager.GetWorkersCount()} workers and {uploadManager.Dispatcher.JobsLeft()} jobs");
-    Console.WriteLine($"Failed jobs: ");
+    Console.WriteLine(
+    $"""
+    time: {stopwatch.Elapsed.TotalSeconds} seconden
+    - - - - - - - - - - - - - - - - - - - - - - - - 
+    hashing:        {hashingManager.GetWorkersCount(),2} workers | {hashingManager.Dispatcher.JobsLeft(),4} jobs
+    checking files: {fileCheckManager.GetWorkersCount(),2} workers | {fileCheckManager.Dispatcher.JobsLeft(),4} jobs
+    zipping:        {zippingManager.GetWorkersCount(),2} workers | {zippingManager.Dispatcher.JobsLeft(),4} jobs
+    upload:         {uploadManager.GetWorkersCount(),2} workers | {uploadManager.Dispatcher.JobsLeft(),4} jobs
+    """
+    );
 
     var failedJobs = fileCheckManager.Dispatcher.GetFailedJobs();
-
-    foreach (var job in failedJobs)
-    {   
-        Console.WriteLine(job.ToString());
+    if (failedJobs.Length > 0) 
+    {
+        Console.WriteLine("- - - - - - - - - - - - - - - - - - - - - - - - ");
+        Console.WriteLine($"Failed jobs: ");
+        foreach (var job in failedJobs)
+        {   
+            Console.WriteLine(job.ToString());
+        }
     }
 }
 
