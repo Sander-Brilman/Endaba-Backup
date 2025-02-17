@@ -18,7 +18,7 @@ public sealed class CheckingWorker(
 
     public override async Task ProcessJob(FileCheckJob job, CancellationToken cancellationToken)
     {
-        string remoteHashFilePath = job.FilePath[settings.BasePath.Length..] + AppSettings.HashFileExtension;
+        string remoteHashFilePath = job.FilePath[settings.GetBasePath().Length..] + AppSettings.HashFileExtension;
 
         string? remoteHash = await dataStore.GetFileContentsAsString(remoteHashFilePath, cancellationToken);
 

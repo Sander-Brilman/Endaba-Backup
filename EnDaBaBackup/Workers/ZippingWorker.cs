@@ -14,7 +14,7 @@ public sealed class ZippingWorker(
     
     public override async Task ProcessJob(ZippingJob job, CancellationToken cancellationToken)
     {
-        string remoteFilePath = job.SourceFilePath[settings.BasePath.Length..];
+        string remoteFilePath = job.SourceFilePath[settings.GetBasePath().Length..];
 
         string tempZipFileLocation = Path.Combine(AppSettings.TempFolder, Path.GetTempFileName() + AppSettings.ZipFileExtension);
         string tempHashFileLocation = Path.Combine(AppSettings.TempFolder, Path.GetTempFileName() + AppSettings.HashFileExtension);

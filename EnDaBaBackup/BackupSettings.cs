@@ -44,10 +44,9 @@ public sealed record BackupSettings(
         return "/" + string.Join('/', filesParts.First().Take(lastCommonIndex)) + "/";
     }
 
-    public string BasePath { 
-        get {
-            _basePath ??= DetermineBasePath(BackupLocationPatterns);
-            return _basePath;
-        } 
-    }
+    public string GetBasePath()
+    {
+        _basePath ??= DetermineBasePath(BackupLocationPatterns);
+        return _basePath;
+    } 
 }

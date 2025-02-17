@@ -15,7 +15,7 @@ if (backupSettings is null || ftpSettings is null)
 }
 
 
-LoggingService loggingService = new("endaba-error-log.txt");
+LoggingService loggingService = new("endaba-log.txt");
 CancellationTokenSource cts = new();
 
 
@@ -64,8 +64,7 @@ var pathResolverTask = Task.Factory.StartNew(async () =>
     {
         var jobs = backupSettings.BackupLocationPatterns
             .SelectMany(pathResolver.GetFilesFromPath)
-            .Select(l => new HashingJob(l))
-            .Append(new HashingJob("home/sander/noop.txt"));
+            .Select(l => new HashingJob(l));
 
         await hashingManager.Dispatcher.AddJobsToQueue(jobs);
 
@@ -76,10 +75,7 @@ var pathResolverTask = Task.Factory.StartNew(async () =>
 }, TaskCreationOptions.LongRunning);
 
 
-Console.WriteLine("Would you like the live-updating screen? [y/n]");
-string response = Console.ReadLine()?.ToLower() ?? "n";
-
-if (response == "y")
+if (args.Contains("--show-jobs"))
 {
     var stopwatch = Stopwatch.StartNew();
     while (true) {
