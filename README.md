@@ -7,8 +7,8 @@ Endaba is a command line tool that makes encrypted backups of your data and stor
 Here is a short overview of what makes it special:
 
 - **Network efficient:** EnDaBa makes use of hashes to only (re)upload new/changed files.
-- **Multi-threaded:** By using multi-threading and multiple FTP connections, data is processed and uploaded much much faster.
-- **Elastic load:** The application automatically scales the number of threads/workers up and down when needed.
+- **Multi-threaded:** By using multi-threading and multiple FTP connections, data is processed and uploaded much faster.
+- **Elastic load:** The application automatically scales the number of worker threads/connections up and down when needed.
 - **Easily decrypted:** Encryption happens before uploading using password-protected zip files. this makes it easy to restore and decrypt your data using other tools.
 
 ## How to run it
