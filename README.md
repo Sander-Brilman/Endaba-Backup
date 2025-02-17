@@ -1,32 +1,38 @@
 # Endaba, a simple but highly performant backup tool.
 
-**En**crypted **Da**ta **Ba**ckup.
+**En**crypted **Da**ta **Ba**ckup
 
-
-Endaba is a command line tool that makes encryped backups of your data en stores them on a remote FTP server.
+Endaba is a command line tool that makes encrypted backups of your data and stores them on a remote FTP server.
 
 Here is a short overview of what makes it special:
 
-- **Network efficent:** EnDaBa makes use of hashes to only (re)upload new / changed files.
-- **Multi-threaded:** By using multi-threading and multiple FTP connections data is processed and uploaded much faster.
-- **Elastic load:** the application automatically scales the amount of threads / workers up and down when needed.
-- **Easily decrypted:** Encryption is done before uploading using password protected zip files. making it easy to restore and decrypt your data using other tools
+- **Network efficient:** EnDaBa makes use of hashes to only (re)upload new/changed files.
+- **Multi-threaded:** By using multi-threading and multiple FTP connections, data is processed and uploaded much faster.
+- **Elastic load:** The application automatically scales the number of threads/workers up and down when needed.
+- **Easily decrypted:** Encryption happens before uploading using password-protected zip files. this makes it easy to restore and decrypt your data using other tools.
 
-
-## How to run it.
+## How to run it
 
 You need:
-- the dotnet 9 SDK installed
-- a remote FTP server to store the files on.
+- The [dotnet 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) installed
+- A remote FTP server to store the files on
 
 Steps to run:
-- download the source code
-- navigate to the `EnDaBaBackup` folder in your terminal
-- run the `dotnet publish` command
-- go to `EnDaBaBackup/bin/Release/net9.0/linux-x64/publish`
-- Run the `EnDaBaBackup` executeable.
+- Download the source code
+- Navigate to the `EnDaBaBackup` folder in your terminal
+- Run the `dotnet publish` command
+- Go to `EnDaBaBackup/bin/Release/net9.0/linux-x64/publish`
+- Run the `EnDaBaBackup` executable (`./EnDaBaBackup`)
 - Edit the configuration files that have been generated according to the instructions listed on-screen
-- run the program again
+
+  _Note that folders listed in the `BackupLocationPatterns` must always end with a `*`_
+- Run the program again (`./EnDaBaBackup --show-jobs`)
+
+*The --show-jobs flag shows a list with the number of jobs in the queue and the number of workers currently active. Note that it takes 15 seconds before new workers get created/stopped.*
+
+## Logs
+
+Info / Error logs are stored in the same directory as the settings files. Any errors within the application will be logged here.
 
 ## Attributions
 
@@ -34,5 +40,3 @@ Thanks to these projects for making this possible:
 
 - FluentFTP
 - SharpZipLib
-
-
