@@ -4,32 +4,28 @@ using EnDaBaServices.Settings;
 namespace EnDaBaBackup.Workers;
 
 public sealed class ZippingWorker(
-    JobDispatcher<ZippingJob> sourceJobDispatcher,
     JobDispatcher<UploadJob> uploadJobDispatcher,
     BackupSettings settings
-) : JobWorker<ZippingJob>(sourceJobDispatcher)
+) : JobWorker<ZippingJob>
 {
     private readonly ZippingService zippingService = new();
     private readonly JobDispatcher<UploadJob> uploadJobDispatcher = uploadJobDispatcher;
     private readonly BackupSettings settings = settings;
     
-    private static readonly string tmpFolder = Path.GetTempPath();
-
-
     public override async Task ProcessJob(ZippingJob job, CancellationToken cancellationToken)
     {
         string remoteFilePath = job.SourceFilePath[settings.BasePath.Length..];
 
-        string tempZipFileLocation = Path.Combine(tmpFolder, Path.GetTempFileName() + ".zip");
-        string tempHashFileLocation = Path.Combine(tmpFolder, Path.GetTempFileName() + ".hash.txt");
+        string tempZipFileLocation = Path.Combine(AppSettings.TempFolder, Path.GetTempFileName() + AppSettings.ZipFileExtension);
+        string tempHashFileLocation = Path.Combine(AppSettings.TempFolder, Path.GetTempFileName() + AppSettings.HashFileExtension);
 
         await File.WriteAllTextAsync(tempHashFileLocation, job.Hash, cancellationToken);
         zippingService.ZipFile(job.SourceFilePath, tempZipFileLocation, settings.EncryptionKey);
 
-        string remoteZipFilePath = remoteFilePath + ".zip";
-        string remoteHashFilePath =remoteFilePath + ".hash.txt";
+        string remoteZipFilePath = remoteFilePath + AppSettings.ZipFileExtension;
+        string remoteHashFilePath =remoteFilePath + AppSettings.HashFileExtension;
 
-        uploadJobDispatcher.AddJobToQueue(new UploadJob(tempZipFileLocation, remoteZipFilePath, tempHashFileLocation, remoteHashFilePath));
+        await uploadJobDispatcher.AddJobToQueueAsync(new UploadJob(tempZipFileLocation, remoteZipFilePath, tempHashFileLocation, remoteHashFilePath));
     }   
 }
 

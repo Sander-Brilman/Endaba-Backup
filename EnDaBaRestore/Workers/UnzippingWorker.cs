@@ -2,7 +2,7 @@ using System;
 
 namespace EnDaBaRestore.Workers;
 
-public class UnzippingWorker
+public sealed class UnzippingWorker
 {
 
 }

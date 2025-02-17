@@ -4,7 +4,8 @@ namespace EnDaBaServices.Settings;
 
 public sealed record BackupSettings(
     string[] BackupLocationPatterns,
-    string? EncryptionKey
+    string? EncryptionKey,
+    int HoursBetweenFullBackup
 ) {
     private string? _basePath; 
 

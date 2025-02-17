@@ -1,4 +1,5 @@
 using System;
+using EnDaBaBackup;
 
 namespace EnDaBaServices;
 
@@ -7,8 +8,8 @@ public static class SafeFileDelete
     private static readonly string _tempFolder = Path.GetTempPath(); 
 
     private static readonly string[] allowedFilesToDelete = [
-        ".zip",
-        ".hash.txt",
+        AppSettings.ZipFileExtension,
+        AppSettings.HashFileExtension,
     ];
 
     public static void Delete(string path) 

@@ -1,13 +1,13 @@
 using System;
 using EnDaBaServices;
 using EnDaBaServices.DataStores;
+using EnDaBaServices.DataStores.FTP;
 
 namespace EnDaBaBackup.Workers;
 
 public sealed class UploadWorker(
-    JobDispatcher<UploadJob> sourceJobDispatcher,
     IDataStore dataStore
-) : JobWorker<UploadJob>(sourceJobDispatcher)
+) : JobWorker<UploadJob>
 {
     private readonly IDataStore dataStore = dataStore;
 
@@ -17,6 +17,13 @@ public sealed class UploadWorker(
         await dataStore.UploadFile(job.LocalHashFilePath, job.RemoteHashFilePath, cancellationToken);
 
         SafeFileDelete.Delete(job.LocalFilePath);
+        SafeFileDelete.Delete(job.LocalHashFilePath);
+    }
+
+    public static async Task<UploadWorker> CreateNew(FTPSettings ftpSettings) 
+    {
+        FTPDataStore dataStore = await FTPDataStore.GenerateNewFromSettings(ftpSettings);
+        return new UploadWorker(dataStore);
     }
 }
 

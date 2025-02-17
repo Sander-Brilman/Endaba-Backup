@@ -1,55 +1,52 @@
  using System;
+using System.Threading.Tasks;
 
 namespace EnDaBaServices;
 
-public sealed class JobDispatcher<TJob> where TJob : JobBase
+public sealed class JobDispatcher<TJob>(Func<TJob, Task> onFailedJob) where TJob : JobBase
 {
     public int JobAttemptLimit { get; set; } = 4;
-
-    private readonly List<TJob> _failedJobs = [];
-
+    private readonly Func<TJob, Task> onFailedJob = onFailedJob;
     private readonly List<TJob> _jobs = [];
-
-    private static readonly Lock _lockObject = new();
-
-    public TJob[] GetFailedJobs() {
-        return [.. _failedJobs];
-    }
+    private readonly Lock _jobsLock = new();
 
     public int JobsLeft() {
         return _jobs.Count;
     }
 
-    public void AddJobToQueue(TJob job) 
+    public async Task AddJobToQueueAsync(TJob job) 
     {
-        lock(_lockObject)
-        {
-            if (job.Attempts++ >= JobAttemptLimit) {
-                _failedJobs.Add(job);
-                return;
-            }
+        if (job.Attempts++ >= JobAttemptLimit) {
+            await onFailedJob(job);
+            return;
+        }
 
+        lock(_jobsLock)
+        {
             _jobs.Add(job);
         }
     }
 
-    public void AddJobsToQueue(IEnumerable<TJob> jobs) 
+    public async Task AddJobsToQueue(IEnumerable<TJob> jobs) 
     {
-        lock(_lockObject)
+        var group = jobs.GroupBy(j => j.Attempts++ >= JobAttemptLimit);
+
+        TJob[] failedJobs = group.FirstOrDefault(g => g.Key == true)?.ToArray() ?? [];
+        TJob[] newJobs = group.FirstOrDefault(g => g.Key == false)?.ToArray() ?? [];
+
+        foreach (TJob job in failedJobs) {
+            await onFailedJob(job);
+        }
+
+        lock(_jobsLock)
         {
-            var group = jobs.GroupBy(j => j.Attempts++ >= JobAttemptLimit);
-
-            TJob[] newJobs = group.FirstOrDefault(g => g.Key == false)?.ToArray() ?? [];
             _jobs.AddRange(newJobs);
-
-            TJob[] failedJobs = group.FirstOrDefault(g => g.Key == true)?.ToArray() ?? [];
-            _failedJobs.AddRange(failedJobs);
         }
     }
 
     public TJob? GetJob() 
     {
-        lock(_lockObject)
+        lock(_jobsLock)
         {
             TJob? job = _jobs.FirstOrDefault();
 

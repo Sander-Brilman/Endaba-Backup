@@ -1,16 +1,16 @@
 using System;
-using EnDaBaBackup.Workers;
+using EnDaBaServices;
 using EnDaBaServices.DataStores;
+using EnDaBaServices.DataStores.FTP;
 using EnDaBaServices.Settings;
 
-namespace EnDaBaServices.Workers;
+namespace EnDaBaBackup.Workers;
 
 public sealed class CheckingWorker(
-    JobDispatcher<FileCheckJob> sourceJobDispatcher, 
     JobDispatcher<ZippingJob> zippingJobDispatcher,
     IDataStore dataStore,
     BackupSettings settings
-) : JobWorker<FileCheckJob>(sourceJobDispatcher)
+) : JobWorker<FileCheckJob>
 {
     private readonly JobDispatcher<ZippingJob> zippingJobDispatcher = zippingJobDispatcher;
     private readonly IDataStore dataStore = dataStore;
@@ -18,7 +18,7 @@ public sealed class CheckingWorker(
 
     public override async Task ProcessJob(FileCheckJob job, CancellationToken cancellationToken)
     {
-        string remoteHashFilePath = job.FilePath[settings.BasePath.Length..] + ".hash.txt";
+        string remoteHashFilePath = job.FilePath[settings.BasePath.Length..] + AppSettings.HashFileExtension;
 
         string? remoteHash = await dataStore.GetFileContentsAsString(remoteHashFilePath, cancellationToken);
 
@@ -39,7 +39,13 @@ public sealed class CheckingWorker(
         //
         // So in both cases just re-upload both files. 
        
-        zippingJobDispatcher.AddJobToQueue(new ZippingJob(job.FilePath, job.LocalHash));
+        await zippingJobDispatcher.AddJobToQueueAsync(new ZippingJob(job.FilePath, job.LocalHash));
+    }
+
+    public static async Task<CheckingWorker> CreateNew(WorkerManager<ZippingJob> zippingManager, FTPSettings ftpSettings, BackupSettings backupSettings) 
+    {
+        FTPDataStore dataStore = await FTPDataStore.GenerateNewFromSettings(ftpSettings);
+        return new CheckingWorker(zippingManager.Dispatcher, dataStore, backupSettings);    
     }
 }
 

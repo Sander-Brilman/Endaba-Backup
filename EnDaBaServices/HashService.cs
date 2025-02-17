@@ -13,9 +13,7 @@ public sealed class HashService
         using var md5 = MD5.Create();
         
         var hash = await md5.ComputeHashAsync(stream, cancellationToken);
-        // return Convert.ToHexStringLower(md5.ComputeHash(stream));
 
         return Convert.ToHexString(hash);
-        // return Encoding.Default.GetString(md5.ComputeHash(stream));
     }
 }

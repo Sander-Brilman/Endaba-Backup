@@ -2,7 +2,7 @@ using System;
 
 namespace EnDaBaRestore.Workers;
 
-public class DownloadWorker
+public sealed class DownloadWorker
 {
 
 }

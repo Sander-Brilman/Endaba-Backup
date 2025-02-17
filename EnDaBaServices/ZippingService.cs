@@ -14,18 +14,16 @@ public sealed class ZippingService
         using FileStream fsOut = File.Create(destinationLocalFilePath);
         using ZipOutputStream zipStream = new(fsOut);
 
-        zipStream.SetLevel(CompressionLevel);
-        zipStream.Password = encryptionKey; 
-
         FileInfo fileInfo = new(localFilePath);
-        string entryName = Path.GetFileName(localFilePath);
-        ZipEntry newEntry = new(entryName)
+        ZipEntry newEntry = new(Path.GetFileName(localFilePath))
         {
             DateTime = fileInfo.CreationTime,
             Size = fileInfo.Length
         };
 
         zipStream.PutNextEntry(newEntry);
+        zipStream.SetLevel(CompressionLevel);
+        zipStream.Password = encryptionKey; 
 
         using (FileStream streamReader = File.OpenRead(localFilePath))
         {
